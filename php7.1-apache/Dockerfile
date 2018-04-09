@@ -5,10 +5,16 @@ RUN set -ex; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
-	apt-get update; \
+	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		libjpeg-dev \
 		libpng-dev \
+		ssl-cert \
+	; \
+	\
+	rm -r /var/lib/apt/lists/* && \
+	a2enmod ssl && \
+	a2ensite default-ssl \
 	; \
 	\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
@@ -42,5 +48,8 @@ RUN { \
 RUN a2enmod rewrite expires
 
 VOLUME /var/www/html
+
+EXPOSE 80
+EXPOSE 443
 
 CMD ["apache2-foreground"]
